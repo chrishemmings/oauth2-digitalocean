@@ -3,6 +3,7 @@
 namespace ChrisHemmings\OAuth2\Client\Test\Provider;
 
 use ChrisHemmings\OAuth2\Client\Provider\DigitalOcean;
+use ChrisHemmings\OAuth2\Client\Token\DigitalOceanAccessToken;
 use Mockery as m;
 use ReflectionClass;
 
@@ -65,18 +66,34 @@ class DigitalOceanTest extends \PHPUnit_Framework_TestCase
 
     public function testGetAccessToken()
     {
+        // lifted from DigitalOcean docs
+        $testResponse = [
+            'access_token' => '547cac21118ae7',
+            'token_type' => 'bearer',
+            'expires_in' => 2592000,
+            'refresh_token' => '00a3aae641658d',
+            'scope' => 'read write',
+            'info' => [
+                'name' => 'Sammy the Shark',
+                'email' => 'sammy@digitalocean.com',
+                'uuid' => 'e028b1b918853eca7fba208a9d7e9d29a6e93c57',
+            ],
+        ];
         $response = m::mock('Psr\Http\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn('{"access_token":"mock_access_token", "token_type":"bearer"}');
+        $response->shouldReceive('getBody')->andReturn(\json_encode($testResponse));
         $response->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $response->shouldReceive('getStatusCode')->andReturn(200);
         $client = m::mock('GuzzleHttp\ClientInterface');
         $client->shouldReceive('send')->times(1)->andReturn($response);
         $this->provider->setHttpClient($client);
+        /** @var DigitalOceanAccessToken $token */
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
-        $this->assertEquals('mock_access_token', $token->getToken());
-        $this->assertNull($token->getExpires());
-        $this->assertNull($token->getRefreshToken());
-        $this->assertNull($token->getResourceOwnerId());
+        $this->assertEquals($testResponse['access_token'], $token->getToken());
+        $this->assertEquals(time() + $testResponse['expires_in'], $token->getExpires());
+        $this->assertEquals($testResponse['refresh_token'], $token->getRefreshToken());
+        $this->assertTrue($token->hasScope('read'));
+        $this->assertTrue($token->hasScope('write'));
+        $this->assertFalse($token->hasScope('badscope'));
     }
 
     public function testUserData()
