@@ -88,6 +88,7 @@ Please see [CONTRIBUTING](https://github.com/chrishemmings/oauth2-digitalocean/b
 ## Credits
 
 - [Chris Hemmings](https://github.com/chrishemmings)
+- [Daniel Hensby](https://github.com/dhensby)
 - [All Contributors](https://github.com/chrishemmings/oauth2-digitalocean/contributors)
 
 
