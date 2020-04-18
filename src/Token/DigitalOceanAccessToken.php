@@ -75,7 +75,7 @@ class DigitalOceanAccessToken extends AccessToken
             $parameters['scope'] = $this->scope;
         }
 
-        if ($this->info) {
+        if (!empty($this->info)) {
             $parameters['info'] = $this->info;
         }
 
