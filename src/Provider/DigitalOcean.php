@@ -16,6 +16,8 @@ class DigitalOcean extends AbstractProvider
 {
     use BearerAuthorizationTrait;
 
+    const ACCESS_TOKEN_RESOURCE_OWNER_ID = 'info.uuid';
+
     /**
      * Get authorization url to begin OAuth flow
      *
