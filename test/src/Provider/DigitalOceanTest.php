@@ -95,6 +95,7 @@ class DigitalOceanTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($token->hasScope('write'));
         $this->assertFalse($token->hasScope('badscope'));
         $this->assertEquals($testResponse['info']['uuid'], $token->getResourceOwnerId());
+        $this->assertEquals($testResponse['info'], $token->getInfo());
     }
 
     public function testUserData()
